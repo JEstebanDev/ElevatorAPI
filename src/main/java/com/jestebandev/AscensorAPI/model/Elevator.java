@@ -9,7 +9,8 @@ public class Elevator {
     int currentFloor;
     int destinationFloor;
     boolean pendingMove;
-    List<Call> stackCall;
+    List<Call> stackInside;
+    List<Call> stackOutSide;
 
     public synchronized int getCurrentFloor() {
         return currentFloor;
@@ -35,12 +36,24 @@ public class Elevator {
         this.pendingMove = pendingMove;
     }
 
-    public List<Call> getStackCall() {
-        return stackCall;
+    public List<Call> getStackInside() {
+        return stackInside;
     }
 
-    public void setStackCall(Call stackCall) {
-        this.stackCall.add(stackCall);
+    public void setStackInside(List<Call> stackInside) {
+        this.stackInside = stackInside;
+    }
+
+    public void addStackInside(Call stackInside) {
+        this.stackInside.add(stackInside);
+    }
+
+    public List<Call> getStackOutSide() {
+        return stackOutSide;
+    }
+
+    public void setStackOutSide(Call stackOutSide) {
+        this.stackOutSide.add(stackOutSide);
     }
 
     @Override
@@ -49,7 +62,8 @@ public class Elevator {
                 "currentFloor=" + currentFloor +
                 ", destinationFloor=" + destinationFloor +
                 ", pendingMove=" + pendingMove +
-                ", stackCall=" + stackCall +
+                ", stackInside=" + stackInside +
+                ", stackOutSide=" + stackOutSide +
                 '}';
     }
 }

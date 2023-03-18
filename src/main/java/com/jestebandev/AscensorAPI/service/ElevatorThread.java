@@ -16,77 +16,61 @@ public class ElevatorThread extends Thread {
     }
 
     public void run() {
-        while (!elevator.getStackCall().isEmpty()) {
-            synchronized (elevator) {
-                List<Call> stackCall = elevator.getStackCall();
-                if (stackCall.isEmpty()) {
-                    elevator.setPendingMove(false);
-                    break;
-                } else {
-                    elevator.setPendingMove(true);
-                    elevator.setDestinationFloor(stackCall.get(0).getFloor());
-
-                    List<Call> callsSorted = sortStack(stackCall);
-                    log.info(callsSorted.toString());
-                    break;
-                     /*
-                    int positions= callsSorted.size();
-                    for (int i = elevator.; i <positions; i++) {
-                        try {
-                            Thread.sleep(2000);
-
-                        }catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                      */
-
-
-                }
-            }
-        }
-        log.info("was dead");
-                /*
-        for (int i = 0; i < 10; i++) {
+        while (true) {
             try {
+                log.info("WAITING...");
                 Thread.sleep(2000);
-                synchronized (elevator) {
-                    log.info("VALUE:" + elevator.getCurrentFloor());
-                    elevator.setCurrentFloor(i);
-                    log.info("Current floor" + elevator.getCurrentFloor());
-                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            while (!elevator.getStackInside().isEmpty()) {
+                elevator.setPendingMove(true);
+                List<Call> stackInside = elevator.getStackInside();
+                int currentFloor = elevator.getCurrentFloor();
+                //closet algorithm
+                Comparator<Call> comparator = Comparator.comparingInt(a -> Math.abs(a.getFloor() - currentFloor));
+                // Sort the list using the comparator
+                stackInside.sort(comparator);
+                // Retrieve the closest value
+                int closest = stackInside.get(0).getFloor();
+                //Remove the closet value will do that operation
 
-        }*/
-
-    }
-
-    private List<Call> sortStack(List<Call> stackCall) {
-        List<Call> callsList = new ArrayList<>(stackCall);
-        if (stackCall.get(0).getDirection().equals(Direction.UP)) {
-            callsList.sort(ElevatorThread::compareDesc);
-        }else{
-            callsList.sort(ElevatorThread::compareAsc);
+                log.info(stackInside.toString());
+                log.info("closest" + closest);
+                while (closest != currentFloor) {
+                    if (closest > currentFloor) {
+                        for (int i = currentFloor; i <= closest; i++) {
+                            try {
+                                log.info("INCREMENT="+i);
+                                Thread.sleep(2000);
+                                elevator.setCurrentFloor(i);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        stackInside.remove(0);
+                        elevator.setStackInside(stackInside);
+                        break;
+                    } else {
+                        for (int i = currentFloor; i >= closest; i--) {
+                            try {
+                                log.info("DECREMENT="+i);
+                                Thread.sleep(2000);
+                                elevator.setCurrentFloor(i);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        stackInside.remove(0);
+                        elevator.setStackInside(stackInside);
+                        break;
+                    }
+                }
+                elevator.setPendingMove(false);
+                log.info("POSITION"+elevator.getCurrentFloor());
+                break;
+            }
         }
-        return new LinkedList<>(callsList);
-    }
 
-    private static int compareDesc(Call c1, Call c2) {
-        if (c1.getFloor() != c2.getFloor()) {
-            return c2.getFloor() - c1.getFloor();
-        } else {
-            return c2.getDirection().compareTo(c1.getDirection());
-        }
-    }
-
-    private static int compareAsc(Call c1, Call c2) {
-        if (c1.getFloor() != c2.getFloor()) {
-            return c1.getFloor() - c2.getFloor();
-        } else {
-            return c1.getDirection().compareTo(c2.getDirection());
-        }
     }
 }

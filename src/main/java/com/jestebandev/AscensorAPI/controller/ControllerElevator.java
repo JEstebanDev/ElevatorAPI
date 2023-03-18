@@ -1,6 +1,5 @@
 package com.jestebandev.AscensorAPI.controller;
 
-import com.jestebandev.AscensorAPI.model.MoveElevator;
 import com.jestebandev.AscensorAPI.model.Response;
 import com.jestebandev.AscensorAPI.service.ServiceElevator;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class ControllerElevator {
 
     @PostMapping("/moveElevator")
     @ResponseStatus(HttpStatus.OK)
-    public Response moveElevator(MoveElevator moveElevator) {
+    public Response moveElevator(int moveElevator) {
         return new Response(Instant.now(), HttpStatus.OK.value(), HttpStatus.OK,
                 "Move Elevator Inside", Map.of("Elevator", serviceElevator.callInside(moveElevator)));
     }

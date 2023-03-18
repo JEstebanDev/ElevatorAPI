@@ -9,22 +9,24 @@ import java.util.LinkedList;
 @Slf4j
 @Service
 public class ServiceElevator implements IElevator {
-    Elevator elevator = new Elevator(3, 0, false, new LinkedList<>());
+    Elevator elevator = new Elevator(5, 0, false, new LinkedList<>(), new LinkedList<>());
+    ElevatorThread elevatorThread = new ElevatorThread(elevator);
 
+    ServiceElevator(){
+        elevatorThread.start();
+    }
     @Override
     public boolean callOutSide(Call call) {
         return false;
     }
 
     @Override
-    public boolean callInside(MoveElevator moveElevator) {
-        if (elevator.getCurrentFloor() < moveElevator.getDestinationFloor()) {
-            elevator.setStackCall(new Call(moveElevator.getDestinationFloor(), Direction.UP, Priority.INSIDE));
+    public boolean callInside(int moveElevator) {
+        if (elevator.getCurrentFloor() < moveElevator) {
+            elevator.addStackInside(new Call(moveElevator, Direction.UP));
         } else {
-            elevator.setStackCall(new Call(moveElevator.getDestinationFloor(), Direction.DOWN, Priority.INSIDE));
+            elevator.addStackInside(new Call(moveElevator, Direction.DOWN));
         }
-        ElevatorThread elevatorThread = new ElevatorThread(elevator);
-        elevatorThread.start();
         return false;
     }
 
