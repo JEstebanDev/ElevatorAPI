@@ -16,18 +16,17 @@ public class ServiceElevator implements IElevator {
         elevatorThread.start();
     }
     @Override
-    public boolean callOutSide(Call call) {
-        return false;
+    public void callOutSide(Call call) {
+
     }
 
     @Override
-    public boolean callInside(int moveElevator) {
+    public void callInside(int moveElevator) {
         if (elevator.getCurrentFloor() < moveElevator) {
             elevator.addStackInside(new Call(moveElevator, Direction.UP));
         } else {
             elevator.addStackInside(new Call(moveElevator, Direction.DOWN));
         }
-        return false;
     }
 
     @Override

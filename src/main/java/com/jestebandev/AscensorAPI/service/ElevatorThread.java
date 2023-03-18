@@ -3,6 +3,7 @@ package com.jestebandev.AscensorAPI.service;
 import com.jestebandev.AscensorAPI.model.Call;
 import com.jestebandev.AscensorAPI.model.Direction;
 import com.jestebandev.AscensorAPI.model.Elevator;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -15,14 +16,11 @@ public class ElevatorThread extends Thread {
         this.elevator = elevator;
     }
 
+    @SneakyThrows
     public void run() {
         while (true) {
-            try {
-                log.info("WAITING...");
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            log.info("WAITING...");
+            Thread.sleep(2000);
             while (!elevator.getStackInside().isEmpty()) {
                 elevator.setPendingMove(true);
                 List<Call> stackInside = elevator.getStackInside();
@@ -33,41 +31,27 @@ public class ElevatorThread extends Thread {
                 stackInside.sort(comparator);
                 // Retrieve the closest value
                 int closest = stackInside.get(0).getFloor();
-                //Remove the closet value will do that operation
+
 
                 log.info(stackInside.toString());
                 log.info("closest" + closest);
+                //It will go to each floor
                 while (closest != currentFloor) {
-                    if (closest > currentFloor) {
-                        for (int i = currentFloor; i <= closest; i++) {
-                            try {
-                                log.info("INCREMENT="+i);
-                                Thread.sleep(2000);
-                                elevator.setCurrentFloor(i);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        stackInside.remove(0);
-                        elevator.setStackInside(stackInside);
-                        break;
-                    } else {
-                        for (int i = currentFloor; i >= closest; i--) {
-                            try {
-                                log.info("DECREMENT="+i);
-                                Thread.sleep(2000);
-                                elevator.setCurrentFloor(i);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        stackInside.remove(0);
-                        elevator.setStackInside(stackInside);
-                        break;
+                    int direction = closest > currentFloor ? 1 : -1;
+                    // Iterate through the floors in the specified direction
+                    for (int destination = currentFloor; destination != closest; destination += direction) {
+                            log.info("Floor: " + destination);
+                            Thread.sleep(2000);
+                            elevator.setCurrentFloor(destination+direction);
                     }
+                    //Remove the closet value because is already in that floor
+                    stackInside.remove(0);
+                    //Set the new stack sorted in the principle stack
+                    elevator.setStackInside(stackInside);
+                    break;
                 }
                 elevator.setPendingMove(false);
-                log.info("POSITION"+elevator.getCurrentFloor());
+                log.info("POSITION" + elevator.getCurrentFloor());
                 break;
             }
         }
