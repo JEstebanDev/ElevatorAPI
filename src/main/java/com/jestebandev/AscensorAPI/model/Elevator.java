@@ -52,6 +52,10 @@ public class Elevator {
         return stackOutSide;
     }
 
+    public void addStackOutSide(Call stackOutSide) {
+        this.stackOutSide.add(stackOutSide);
+    }
+
     public void setStackOutSide(Call stackOutSide) {
         this.stackOutSide.add(stackOutSide);
     }

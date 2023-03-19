@@ -9,7 +9,7 @@ import java.util.LinkedList;
 @Slf4j
 @Service
 public class ServiceElevator implements IElevator {
-    Elevator elevator = new Elevator(5, 0, false, new LinkedList<>(), new LinkedList<>());
+    Elevator elevator = new Elevator(1, 0, false, new LinkedList<>(), new LinkedList<>());
     ElevatorThread elevatorThread = new ElevatorThread(elevator);
 
     ServiceElevator(){
@@ -17,9 +17,8 @@ public class ServiceElevator implements IElevator {
     }
     @Override
     public void callOutSide(Call call) {
-
+        elevator.addStackOutSide(call);
     }
-
     @Override
     public void callInside(int moveElevator) {
         if (elevator.getCurrentFloor() < moveElevator) {
@@ -28,7 +27,6 @@ public class ServiceElevator implements IElevator {
             elevator.addStackInside(new Call(moveElevator, Direction.DOWN));
         }
     }
-
     @Override
     public Elevator showInfo() {
         return elevator;
